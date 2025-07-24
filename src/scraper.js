@@ -35,19 +35,19 @@ async function buscarPromocoesAmazon() {
         const precoElement = secaoPreco ? secaoPreco.querySelector('.a-price') : null;
         const preco = precoElement ? precoElement.innerText.trim() : 'Verificar no site';
         
-        // =================== LÓGICA DE LIMPEZA DA IMAGEM ===================
+     
         const imagemElement = el.querySelector('img');
         let urlBruta = '';
         if (imagemElement) {
           urlBruta = imagemElement.srcset ? imagemElement.srcset.split(',')[0].split(' ')[0] : imagemElement.src;
         }
 
-        let imagemUrl = urlBruta; // Começa com a URL que pegamos
+        let imagemUrl = urlBruta;
         if (urlBruta.includes('._')) {
-          // Pega a parte da URL ANTES do '._' e adiciona .jpg
+
           imagemUrl = urlBruta.substring(0, urlBruta.indexOf('._')) + '.jpg';
         }
-        // ======================================================================
+    
         
         if (imagemUrl && imagemUrl.startsWith('http')) {
             itens.push({ titulo, preco, link, imagemUrl });
@@ -59,7 +59,7 @@ async function buscarPromocoesAmazon() {
   
   await browser.close(); 
   
-  // Filtra novamente por segurança, caso alguma URL inválida tenha passado
+  
   const produtosValidos = produtos.filter(p => p.imagemUrl.endsWith('.jpg'));
 
   return produtosValidos;
