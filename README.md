@@ -11,7 +11,7 @@ Este projeto é um bot automatizado que monitora sites de e-commerce em busca de
 
 <br>
 
-> **[<img width="1484" height="359" alt="image" src="https://github.com/user-attachments/assets/47ce6ca7-2650-473d-8737-648dd07eb10a" />
+> <img width="1484" height="359" alt="image" src="https://github.com/user-attachments/assets/47ce6ca7-2650-473d-8737-648dd07eb10a" />
 <img width="992" height="773" alt="image" src="https://github.com/user-attachments/assets/54a8b8b6-3b08-477e-8665-1b45b7f1c09b" />
  <br>
 
