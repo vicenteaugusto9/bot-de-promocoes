@@ -1,11 +1,13 @@
+require('dotenv').config()
+
 const cron = require('node-cron')
 
 const { buscarPromocoesAmazon } = require('./scraper');
 const { gerarLinkAfiliado } = require('./afiliado');
 const { postarNoCanal } = require('./telegram');
 
-const AMAZON_AFILIATE_TAG = 'v1c3nt3g0m3s-20'
-const TELEGRAM_CHANNEL_ID = '-1002890802836'
+const AMAZON_AFILIATE_TAG = process.env.AMAZON_AFILIATE_TAG
+const TELEGRAM_CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID
 
 async function rodarBot(params) {
     console.log('====================================')
@@ -37,10 +39,10 @@ async function rodarBot(params) {
     }
 }
 
-// cron.schedule('0 * * * *', () =>{
-//     console.log('tarefa agenda sendo executada....')
-//     rodarBot()
-// })
+cron.schedule('0 * * * *', () =>{
+    console.log('tarefa agenda sendo executada....')
+    rodarBot()
+})
 
 console.log('Bot de promocoes inciado. primeira execucao em andamento...')
 rodarBot()

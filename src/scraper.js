@@ -1,17 +1,10 @@
-// scraper.js - VERSÃO DE DEPURAÇÃO AVANÇADA
+// scraper.js - VERSÃO FINAL E CORRIGIDA
 
 const puppeteer = require('puppeteer');
 
 async function buscarPromocoesAmazon() {
-  console.log('Iniciando busca por promoções na Amazon...');
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
-
-  // =================== MÁGICA DA DEPURAÇÃO ===================
-  // Esta parte faz com que qualquer 'console.log' dentro do navegador
-  // apareça no nosso terminal do Node.js.
-  page.on('console', msg => console.log('LOG DO NAVEGADOR:', msg.text()));
-  // ==========================================================
 
   await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
 
@@ -19,11 +12,9 @@ async function buscarPromocoesAmazon() {
   await page.goto(url, { waitUntil: 'networkidle2' });
 
   try {
-    console.log('Esperando os cards de produtos aparecerem na página...');
-    await page.waitForSelector('div[class*="GridItem-module__container"]', { timeout: 10000 });
-    console.log('Cards de produtos carregados! Iniciando a extração detalhada.');
+    await page.waitForSelector('div[class*="GridItem-module__container"]', { timeout: 15000 });
   } catch (error) {
-    console.log('Os produtos não apareceram a tempo.');
+    console.log('Não foi possível carregar os produtos a tempo. Encerrando a busca.');
     await browser.close();
     return [];
   }
@@ -32,39 +23,46 @@ async function buscarPromocoesAmazon() {
     const itens = [];
     const seletorProduto = 'div[class*="GridItem-module__container"]';
     
-    document.querySelectorAll(seletorProduto).forEach((el, index) => {
-  console.log(`--- Processando Card #${index + 1} ---`);
+    document.querySelectorAll(seletorProduto).forEach(el => {
+      const tituloElement = el.querySelector('[class*="ProductCard-module__title"]');
+      const linkElement = el.querySelector('a[data-testid="product-card-link"]');
 
-  const tituloElement = el.querySelector('[class*="ProductCard-module__title"]');
-  const secaoPreco = el.querySelector('div[data-testid="price-section"]');
-  const precoElement = secaoPreco ? secaoPreco.querySelector('.a-price') : null;
-  const linkElement = el.querySelector('a[data-testid="product-card-link"]');
+      if (tituloElement && linkElement) {
+        const titulo = tituloElement.innerText.trim();
+        const link = linkElement.href.split('?')[0];
 
-  
-  if (tituloElement && linkElement) {
-    console.log('>>> SUCESSO: Card com dados essenciais encontrado!');
-    
-    const titulo = tituloElement.innerText.trim();
-    
-    const preco = precoElement ? precoElement.innerText.trim() : 'Verificar no site';
-    const link = linkElement.href.split('?')[0];
-    const imagemElement = el.querySelector('img');
-    const imagemUrl = imagemElement ? imagemElement.src : 'IMAGEM_NAO_DISPONIVEL';
-    
-    itens.push({ titulo, preco, link, imagemUrl });
-  } else {
-    console.log('>>> FALHA: Card sem título ou link, pulando.');
-  }
+        const secaoPreco = el.querySelector('div[data-testid="price-section"]');
+        const precoElement = secaoPreco ? secaoPreco.querySelector('.a-price') : null;
+        const preco = precoElement ? precoElement.innerText.trim() : 'Verificar no site';
+        
+        // =================== LÓGICA DE LIMPEZA DA IMAGEM ===================
+        const imagemElement = el.querySelector('img');
+        let urlBruta = '';
+        if (imagemElement) {
+          urlBruta = imagemElement.srcset ? imagemElement.srcset.split(',')[0].split(' ')[0] : imagemElement.src;
+        }
+
+        let imagemUrl = urlBruta; // Começa com a URL que pegamos
+        if (urlBruta.includes('._')) {
+          // Pega a parte da URL ANTES do '._' e adiciona .jpg
+          imagemUrl = urlBruta.substring(0, urlBruta.indexOf('._')) + '.jpg';
+        }
+        // ======================================================================
+        
+        if (imagemUrl && imagemUrl.startsWith('http')) {
+            itens.push({ titulo, preco, link, imagemUrl });
+        }
+      }
     });
     return itens;
   });
   
-  console.log(`Script encontrou ${produtos.length} produtos válidos.`);
-  console.log('>>> NAVEGADOR PERMANECERÁ ABERTO PARA INSPEÇÃO. <<<');
+  await browser.close(); 
   
-  // await browser.close(); 
-  
-  return produtos;
+  // Filtra novamente por segurança, caso alguma URL inválida tenha passado
+  const produtosValidos = produtos.filter(p => p.imagemUrl.endsWith('.jpg'));
+
+  return produtosValidos;
 }
 
 module.exports = { buscarPromocoesAmazon };
