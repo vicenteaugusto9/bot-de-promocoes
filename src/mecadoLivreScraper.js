@@ -10,7 +10,7 @@ async function buscarPromocoesMercadoLivre() {
     await page.goto(url, { waitUntil: 'networkidle2' })
 
     try {
-        await page.waitForSelector('div[class*="GridItem-module__container"]', { timeout: 1500 })
+        await page.waitForSelector('div[class*="GridItem-module__container"]', { timeout: 4000 })
     } catch (error) {
         console.log('Não foi possível carregar os produtos a tempo. Encerrando a busca.')
         await browser.close()
