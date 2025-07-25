@@ -18,40 +18,40 @@ async function buscarPromocoesMercadoLivre() {
     }
 
     const produtos = await page.evaluate(() => {
+    const itens = [];
+    
+    const seletorProduto = '.andes-card'; 
 
-        const itens = []
-        const seletorProduto = 'div[class*="GridItem-module__container"]'
+    document.querySelectorAll(seletorProduto).forEach(el => {
+        try {
+         
+            const tituloElement = el.querySelector('.poly-component__title-wrapper');
+            const linkElement = el.querySelector('a.poly-component__title');
+            const precoElement = el.querySelector('.poly-price__current');
+            const imagemElement = el.querySelector('.poly-component__picture');
 
-        document.querySelectorAll(seletorProduto).forEach(el => {
-            const tituloElement = el.querySelector()
-            const linkElement = el.querySelector()
+         
+            if (tituloElement && linkElement && imagemElement) {
+                const titulo = tituloElement.innerText.trim();
+                const link = linkElement.href; 
+                const preco = precoElement ? precoElement.innerText.trim() : 'Verificar no site';
 
-            if (tituloElement && linkElement) {
-                const titulo = tituloElement.innerText.trim()
-                const link = linkElement.href.split('?')[0]
-
-                const secaoPreco = el.querySelector()
-                const precoElement = secaoPreco ? secaoPreco.querySelector() : null
-                const preco = precoElement ? precoElement.innerText.trim() : 'vericar no site '
-
-
-                const imagemElement = el.querySelector()
-                let urlBruta = ''
-                if (imagemElement) {
-                    urlBruta = imagemElement.srcset ? imagemElement.srcset.split(',')[0].split('')[0] : imagemElement.src
-                }
-
-                if (urlBruta.includes('._')) {
-                    imagemUrl = urlBruta.substring(0, urlBruta.indexOf('._')) + '.jpg';
-
-                }
+    
+                const imagemUrl = imagemElement.dataset.src || imagemElement.src;
+                
+             
                 if (imagemUrl && imagemUrl.startsWith('http')) {
                     itens.push({ titulo, preco, link, imagemUrl });
                 }
             }
-            })
-         return itens
-    })
+        } catch (e) {
+            
+            console.error('Erro ao extrair um produto do ML:', e);
+        }
+    });
+    return itens;
+});
+    
     await browser.close(); 
   
   
