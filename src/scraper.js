@@ -1,4 +1,3 @@
-// scraper.js - VERSÃO FINAL E CORRIGIDA
 
 const puppeteer = require('puppeteer');
 
