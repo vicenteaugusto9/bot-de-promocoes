@@ -119,7 +119,7 @@ Este projeto está em constante evolução. Os próximos passos planejados são:
 
 -   [ ] Implementar scraping de uma página com preços mais consistentes.
 -   [x] Corrigir bugs na captura de imagens.
--   [ ] Adicionar scraping para o site do **Mercado Livre**.
+-   [x] Adicionar scraping para o site do **Mercado Livre**.
 -   [ ] Criar filtros para ignorar produtos de certas categorias ou abaixo de um certo valor.
 -   [ ] Refatorar o código para permitir a busca em múltiplas lojas de forma modular.
 -   [ ] Fazer o deploy da aplicação em um servidor na nuvem (VPS ou PaaS).
